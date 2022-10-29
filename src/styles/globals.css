@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Nunito", sans-serif;
+  src: url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
+}
+
+@layer base {
+  body {
+    @apply bg-slate-300;
+  }
+}
