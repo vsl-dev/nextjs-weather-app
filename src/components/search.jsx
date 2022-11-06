@@ -1,11 +1,21 @@
 import { useState } from "react";
+import Router, { useRouter } from "next/router";
+import useSWR from "swr";
+
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Search() {
   const [query, search] = useState("");
+  const router = useRouter();
+  const { data } = useSWR(() => `/api/search?q=${router.query.q}`, fetcher);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log(query);
+    Router.push({
+      pathname: "/",
+      query: { q: query },
+    });
+    console.log(data)
   };
 
   return (
@@ -40,6 +50,19 @@ export default function Search() {
           </div>
         </form>
       </div>
+      {data?.length > 1 ? (
+        <div className="w-full border-2 border-gray-300 bg-white px-5 pr-16 rounded-lg text-sm mt-3">
+          {data
+            ? data?.map((x) => {
+                <div key={x.id}>{x.name}</div>;
+              })
+            : Array.from({ length: 1 }).map((_, index) => (
+                <div key={1}>Loading...</div>
+              ))}
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }
