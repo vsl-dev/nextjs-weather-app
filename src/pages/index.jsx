@@ -1,6 +1,6 @@
 import Search from "../components/search";
 import Weather from "../components/weather";
-const apiKey = "ff9b41622f994b1287a73535210809";
+import { config } from "../../config";
 
 export default function Home({ weather }) {
   return (
@@ -13,16 +13,31 @@ export default function Home({ weather }) {
   );
 }
 
-export async function getServerSideProps() {
-  const clientInfo = await fetch("https://geolocation-db.com/json/");
-  const clientInfoJson = await clientInfo.json();
-  const data = await fetch(
-    `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${clientInfoJson.city}&days=7`
-  );
-  const weather = await data.json();
-  return {
-    props: {
-      weather,
-    },
-  };
+export async function getServerSideProps(req) {
+  const query = req.query.city;
+  if (query) {
+    const data = await fetch(
+      `https://api.weatherapi.com/v1/forecast.json?key=${config.apiKey}&q=${
+        query.length > 1 ? query : "Baku"
+      }&days=7`
+    );
+    const weather = await data.json();
+    return {
+      props: {
+        weather,
+      },
+    };
+  } else {
+    const clientInfo = await fetch("https://geolocation-db.com/json/");
+    const clientInfoJson = await clientInfo.json();
+    const data = await fetch(
+      `https://api.weatherapi.com/v1/forecast.json?key=${config.apiKey}&q=${clientInfoJson.city}&days=7`
+    );
+    const weather = await data.json();
+    return {
+      props: {
+        weather,
+      },
+    };
+  }
 }

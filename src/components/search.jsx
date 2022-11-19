@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import Router, { useRouter } from "next/router";
 import useSWR from "swr";
 
@@ -7,15 +8,15 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 export default function Search() {
   const [query, search] = useState("");
   const router = useRouter();
-  const { data } = useSWR(() => `/api/search?q=${router.query.q}`, fetcher);
+  const { data } = useSWR(`/api/search?q=${router.query.q}`, fetcher);
 
   const handleSearch = (e) => {
     e.preventDefault();
     Router.push({
       pathname: "/",
-      query: { q: query },
+      query: { q: query, city: router.query.city ?? "" },
     });
-    console.log(data)
+    console.log(data);
   };
 
   return (
@@ -50,16 +51,28 @@ export default function Search() {
           </div>
         </form>
       </div>
-      {data?.length > 1 ? (
-        <div className="w-full border-2 border-gray-300 bg-white px-5 pr-16 rounded-lg text-sm mt-3">
-          {data
-            ? data?.map((x) => {
-                <div key={x.id}>{x.name}</div>;
-              })
-            : Array.from({ length: 1 }).map((_, index) => (
-                <div key={1}>Loading...</div>
-              ))}
-        </div>
+      {router.query.q ? (
+        data?.length > 1 ? (
+          <div className="w-full border-2 border-gray-300 bg-white px-5 pr-16 rounded-lg text-sm mt-3">
+            {data ? (
+              data?.map((x) => (
+                <div key={x.id} className="w-full p-1 cursor-pointer">
+                  <Link href={{ pathname: "/", query: { city: x.name } }}>
+                    <a>
+                      {x.name}, {x.country}
+                    </a>
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <div></div>
+            )}
+          </div>
+        ) : (
+          <div className="w-full border-2 border-gray-300 bg-white px-5 pr-16 rounded-lg text-sm mt-3">
+            <h3 className="w-full p-3">No results for "{router.query.q}"</h3>
+          </div>
+        )
       ) : (
         <div></div>
       )}
