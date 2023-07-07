@@ -70,7 +70,7 @@ export default function Search() {
           </div>
         ) : (
           <div className="w-full border-2 border-gray-300 bg-white px-5 pr-16 rounded-lg text-sm mt-3">
-            <h3 className="w-full p-3">No results for "{router.query.q}"</h3>
+            <h3 className="w-full p-3">No results for &ldquo;{router.query.q}&ldquo;</h3>
           </div>
         )
       ) : (
